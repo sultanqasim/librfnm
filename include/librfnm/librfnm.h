@@ -225,6 +225,8 @@ public:
 
     MSDLL rfnm_api_failcode tx_dqbuf(struct librfnm_tx_buf** buf);
 
+    MSDLL rfnm_api_failcode stop_stream();
+
     MSDLL static enum rfnm_rf_path string_to_rf_path(std::string path);
 
     MSDLL static std::string rf_path_to_string(enum rfnm_rf_path path);
