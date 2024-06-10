@@ -657,6 +657,18 @@ MSDLL rfnm_api_failcode librfnm::tx_stream(enum librfnm_stream_format format, in
     return ret;
 }
 
+MSDLL rfnm_api_failcode librfnm::stop_stream() {
+    rfnm_api_failcode ret = RFNM_API_OK;
+
+    for (int8_t i = 0; i < LIBRFNM_THREAD_COUNT; i++) {
+        std::lock_guard<std::mutex> lockGuard(librfnm_thread_data[i].cv_mutex);
+        librfnm_thread_data[i].rx_active = 0;
+        librfnm_thread_data[i].tx_active = 0;
+    }
+
+    return ret;
+}
+
 MSDLL rfnm_api_failcode librfnm::rx_qbuf(struct librfnm_rx_buf * buf) {
     std::lock_guard<std::mutex> lockGuard(librfnm_rx_s.in_mutex);
     librfnm_rx_s.qbuf_cnt++;
