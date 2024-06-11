@@ -202,6 +202,13 @@ void librfnm::threadfn(size_t thread_index) {
 
             {
                 std::lock_guard<std::mutex> lockGuard(librfnm_rx_s.out_mutex);
+
+                if (received_ccs.contains(buf->usb_cc)) {
+                    spdlog::info("duplicate cc {}", buf->usb_cc);
+                } else {
+                    received_ccs.insert(buf->usb_cc);
+                }
+
                 librfnm_rx_s.out[lrxbuf->adc_id].push(buf);
 
                 //if (librfnm_rx_s.out[lrxbuf->adc_id].size() > 50) {
