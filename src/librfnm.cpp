@@ -796,7 +796,15 @@ MSDLL int librfnm::dqbuf_is_cc_continuous(uint8_t adc_id, int acquire_lock) {
         return 0;
     }
 
-    buf = librfnm_rx_s.out[librfnm_rx_s.required_adc_id].top();
+    while (librfnm_rx_s.out[adc_id].size() > 5 &&
+            librfnm_rx_s.out[adc_id].top()->usb_cc < librfnm_rx_s.usb_cc[adc_id]) {
+        buf = librfnm_rx_s.out[adc_id].top();
+        librfnm_rx_s.out[adc_id].pop();
+        spdlog::info("stale cc {} discarded from adc {}", buf->usb_cc, adc_id);
+        librfnm_rx_s.in.push(buf);
+    }
+
+    buf = librfnm_rx_s.out[adc_id].top();
 
     if (acquire_lock) {
         librfnm_rx_s.out_mutex.unlock();
@@ -808,8 +816,8 @@ MSDLL int librfnm::dqbuf_is_cc_continuous(uint8_t adc_id, int acquire_lock) {
     else {
         //if (queue_size > LIBRFNM_RX_RECOMB_BUF_LEN) {
         if (acquire_lock && queue_size > LIBRFNM_RX_RECOMB_BUF_LEN) {
-            spdlog::info("cc {} overwritten at queue size {} adc {}", librfnm_rx_s.usb_cc[librfnm_rx_s.required_adc_id],
-                    queue_size, librfnm_rx_s.required_adc_id);
+            spdlog::info("cc {} overwritten at queue size {} adc {}", librfnm_rx_s.usb_cc[adc_id],
+                    queue_size, adc_id);
             dqbuf_overwrite_cc(adc_id, acquire_lock);
         }
         return 0;
