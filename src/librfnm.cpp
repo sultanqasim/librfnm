@@ -632,6 +632,9 @@ MSDLL rfnm_api_failcode librfnm::rx_stream(enum librfnm_stream_format format, in
         librfnm_thread_data[i].cv.notify_one();
     }
 
+    // HACK: work around usb_cc from RFNM starting at 1
+    librfnm_rx_s.usb_cc[0] = 1;
+
     return ret;
 }
 
