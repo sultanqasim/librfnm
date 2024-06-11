@@ -9,6 +9,7 @@
 #include <math.h>
 #include <array>
 #include <algorithm>
+#include <set>
 
 #pragma once
 
@@ -257,4 +258,6 @@ private:
     struct librfnm_thread_data_s librfnm_thread_data[LIBRFNM_THREAD_COUNT] = {};
 
     std::array<std::thread, LIBRFNM_THREAD_COUNT> librfnm_thread_c{};
+
+    std::set<uint64_t> received_ccs;
 };
